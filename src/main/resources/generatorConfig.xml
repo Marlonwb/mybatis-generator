@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<!--http://www.mybatis.org/generator/-->
+<generatorConfiguration>
+    <!--导入属性配置-->
+    <!--
+        使用URL的方式，比如： file:///F:/generate/generatorConfig.properties 注意多模块要用真正打包出来的路径，不然它就报错，诡异的逻辑
+    -->
+    <properties resource="system.properties" />
+    <!-- resource的方式，同上-->
+    <!--<properties resource="war/target/diamond-war-1.0-SNAPSHOT/WEB-INF/classes/system.properties" />-->
+
+    <!--指定特定数据库的jdbc驱动jar包的位置-->
+    <classPathEntry location="${jdbc_driver_path}"/>
+
+    <context id="mysql" defaultModelType="flat" targetRuntime="MyBatis3">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+
+        <!-- optional，旨在创建class时，对注释进行控制 -->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true" />
+            <property name="suppressDate" value="true"/>
+        </commentGenerator>
+
+        <!--jdbc的数据库连接 -->
+        <jdbcConnection driverClass="${jdbc_user_driver_class}"
+                        connectionURL="${jdbc_user_url}"
+                        userId="${jdbc_user_username}"
+                        password="${jdbc_user_password}">
+        </jdbcConnection>
+
+        <!-- Model模型生成器,用来生成含有主键key的类，记录类 以及查询Example类
+            targetPackage     指定生成的model生成所在的包名
+            targetProject     指定在该项目下所在的路径
+        -->
+        <javaModelGenerator targetPackage="${java_model_generator_target_package}"
+                            targetProject="${java_model_generator_target_project}">
+            <!-- 是否允许子包，即targetPackage.schemaName.tableName -->
+            <property name="enableSubPackages" value="false"/>
+            <!-- 是否对model添加 构造函数 -->
+            <property name="constructorBased" value="true"/>
+            <!-- 是否对类CHAR类型的列的数据进行trim操作 -->
+            <property name="trimStrings" value="true"/>
+            <!-- 建立的Model对象是否 不可改变  即生成的Model对象不会有 setter方法，只有构造方法 -->
+            <property name="immutable" value="false"/>
+        </javaModelGenerator>
+
+        <!--Mapper映射sql xml文件生成所在的目录 为每一个数据库的表生成对应的SqlMap文件 -->
+        <sqlMapGenerator targetPackage="${sql_map_generator_target_package}"
+                         targetProject="${sql_map_generator_target_project}">
+            <property name="enableSubPackages" value="false"/>
+        </sqlMapGenerator>
+
+        <!--
+               客户端代码，生成易于使用的针对Model对象和XML配置文件的mapper接口文件
+               type="ANNOTATEDMAPPER",生成Java Model,Mapper Interface,SqlProvider(替代了SqlMapper文件)
+               type="MIXEDMAPPER",生成基于注解的Mapper Interface,Java Model和相应SqlMapper文件
+               type="XMLMAPPER",生成SQLMap XML文件和独立的Mapper接口、Java Model文件
+        -->
+        <javaClientGenerator targetPackage="${java_client_generator_target_package}"
+                             targetProject="${java_client_generator_target_project}"
+                             type="XMLMAPPER">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <table tableName="user" domainObjectName="User"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+            <!--identity="true" type="post" 设置完，生成的insert语句自动会插入SELECT LAST_INSERT_ID()的代码以获取id-->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post"/>
+        </table>
+
+    </context>
+</generatorConfiguration>
